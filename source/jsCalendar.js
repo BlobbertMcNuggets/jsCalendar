@@ -723,8 +723,10 @@ var jsCalendar = (function(){
                 this._elements.bodyCols[i].className = 'jsCalendar-date-in-past';
             }
             else {
-                // Remove the jsCalendar-selected class
+                // Remove the jsCalendar classes (though any custom classes will remain)
                 this._elements.bodyCols[i].className = this._elements.bodyCols[i].className.replace("jsCalendar-selected", '');
+                this._elements.bodyCols[i].className = this._elements.bodyCols[i].className.replace("jsCalendar-date-in-past", '');
+
             }
         }
 
