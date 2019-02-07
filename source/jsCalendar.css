@@ -114,7 +114,7 @@
 			transition: color 0.1s, background-color 0.2s;
 			width: 36px;
 		}
-		.jsCalendar tbody td:hover {
+		.jsCalendar tbody td:not(.jsCalendar-date-in-past):hover {
 			background-color: #E6E6E6;
 		}
 		.jsCalendar tbody td.jsCalendar-selected {
@@ -138,7 +138,9 @@
 		.jsCalendar tbody td.jsCalendar-next:hover {
 			color: #FFFFFF;
 		}
-
+		.jsCalendar tbody td.jsCalendar-date-in-past {
+			pointer-events: none;
+		}
 		.jsCalendar thead {
 			display: block;
 			margin: 4px 4px 0 4px;
