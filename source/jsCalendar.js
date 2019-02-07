@@ -179,7 +179,8 @@ var jsCalendar = (function(){
             navigator : true,
             navigatorPosition : 'both',
             min : false,
-            max : false
+            max : false,
+            selectPast : true
         };
         // Check options
         if (typeof options.zeroFill !== 'undefined'){
@@ -256,6 +257,11 @@ var jsCalendar = (function(){
             // Parse date
             this._options.max = this._parseDate(options.max);
         }
+
+        // Set whether dates in the past are able to be selected
+        if (typeof options.selectPast !== 'undefined') {
+            this._options.selectPast = options.selectPast;
+        }
     };
 
     // Set target
@@ -331,7 +337,7 @@ var jsCalendar = (function(){
     // Check if date in range
     JsCalendar.prototype._isDateInRange = function(date) {
         // If no range
-        if (this._options.min === false && this._options.max === false) {
+        if (this._options.min === false && this._options.max === false && this._options.selectPast === true) {
             return true;
         }
 
@@ -344,6 +350,11 @@ var jsCalendar = (function(){
         }
         // Check max
         if (this._options.max !== false && this._options.max.getTime() < date.getTime()) {
+            return false;
+        }
+
+        // Check past (Is the date older than this._now)
+        if (this._options.selectPast === false && this._now !== undefined && this._now !== null && this._now.getTime() > date.getTime()) {
             return false;
         }
 
@@ -677,6 +688,10 @@ var jsCalendar = (function(){
     JsCalendar.prototype._update = function() {
         // Get month info
         var month = this._getVisibleMonth(this._date);
+
+        // Get whether this is the current or previous month by checking the start of the (viewable) month against the current time
+        var currentOrPreviousMonth = month.days[(month.start - 1)].getTime() <= this._now.getTime();
+
         // Save data
         this._active = month.days.slice();
         // Update month name
@@ -694,15 +709,20 @@ var jsCalendar = (function(){
             // If date is selected
             if (this._selected.indexOf(month.days[i].getTime()) >= 0) {
                 this._elements.bodyCols[i].className = 'jsCalendar-selected';
+            }else if (this._options.selectPast === false && currentOrPreviousMonth && month.days[i].getDate() < this._now.getDate()) {
+                this._elements.bodyCols[i].className = 'jsCalendar-date-in-past';
             }
             else {
                 this._elements.bodyCols[i].removeAttribute('class');
             }
         }
 
+        // Determines which classes to apply to the previous month
+        var previousMonthClass = 'jsCalendar-previous' + ((this._options.selectPast === false && currentOrPreviousMonth === true) ? ' jsCalendar-date-in-past' : '');
+
         // Previous month
         for (i = 0; i < month.start - 1; i++) {
-            this._elements.bodyCols[i].className = 'jsCalendar-previous';
+            this._elements.bodyCols[i].className = previousMonthClass;
         }
         // Current day
         if (month.current >= 0) {
