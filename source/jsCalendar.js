@@ -180,7 +180,8 @@ var jsCalendar = (function(){
             navigatorPosition : 'both',
             min : false,
             max : false,
-            selectPast : true
+            selectPast : true,
+            setDataDate : false
         };
         // Check options
         if (typeof options.zeroFill !== 'undefined'){
@@ -261,6 +262,11 @@ var jsCalendar = (function(){
         // Set whether dates in the past are able to be selected
         if (typeof options.selectPast !== 'undefined') {
             this._options.selectPast = options.selectPast;
+        }
+
+        // Set whether dates in the past are able to be selected
+        if (typeof options.setDataDate !== 'undefined') {
+            this._options.setDataDate = options.setDataDate;
         }
     };
 
@@ -706,6 +712,10 @@ var jsCalendar = (function(){
             text = month.days[i].getDate();
             this._elements.bodyCols[i].textContent = (text < 10 ? prefix + text : text);
 
+            if(this._options.setDataDate === true){
+                this._elements.bodyCols[i].setAttribute('data-date', ( ('0' + month.days[i].getDate()).slice(-2) + '/' + ('0' + (month.days[i].getMonth() + 1)).slice(-2) + '/' + month.days[i].getFullYear()));
+            }
+
             // If date is selected
             if (this._selected.indexOf(month.days[i].getTime()) >= 0) {
                 this._elements.bodyCols[i].className = 'jsCalendar-selected';
@@ -713,7 +723,8 @@ var jsCalendar = (function(){
                 this._elements.bodyCols[i].className = 'jsCalendar-date-in-past';
             }
             else {
-                this._elements.bodyCols[i].removeAttribute('class');
+                // Remove the jsCalendar-selected class
+                this._elements.bodyCols[i].className = this._elements.bodyCols[i].className.replace("jsCalendar-selected", '');
             }
         }
 
